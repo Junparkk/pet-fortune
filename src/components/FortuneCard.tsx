@@ -1,0 +1,88 @@
+'use client'
+
+import { FortuneResult } from '@/lib/fortune'
+
+interface Props {
+  result: FortuneResult
+  today: string
+}
+
+const MOOD_GRADIENTS = [
+  'from-yellow-200 to-orange-200',
+  'from-pink-200 to-purple-200',
+  'from-blue-100 to-purple-100',
+  'from-indigo-100 to-blue-200',
+  'from-rose-200 to-pink-200',
+]
+
+export default function FortuneCard({ result, today }: Props) {
+  async function handleShare() {
+    const text = `${result.petName}의 오늘 기분: ${result.moodLabel}\n"${result.message}"\n\n🐾 오늘의 운세`
+    if (navigator.share) {
+      await navigator.share({ title: `${result.petName}의 오늘 운세`, text })
+    } else {
+      await navigator.clipboard.writeText(text)
+      alert('클립보드에 복사됐어요! 📋')
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center">
+      {/* 9:16 card */}
+      <div className={`w-full max-w-xs aspect-[9/16] rounded-3xl bg-gradient-to-b ${MOOD_GRADIENTS[result.moodLevel]} p-6 flex flex-col shadow-2xl`}>
+
+        {/* Header */}
+        <div className="text-center mb-3">
+          <p className="text-xs font-bold text-gray-500">{today}</p>
+          <h2 className="text-xl font-black text-gray-800 mt-1">{result.petName}의 오늘 운세</h2>
+        </div>
+
+        {/* Zodiac + Element badges */}
+        <div className="flex justify-center gap-2 mb-3">
+          <span className="bg-white/70 rounded-full px-3 py-1 text-xs font-bold text-gray-600">
+            {result.zodiacEmoji} {result.zodiacAnimal}띠
+          </span>
+          <span className="bg-white/70 rounded-full px-3 py-1 text-xs font-bold text-gray-600">
+            {result.elementEmoji} {result.element}의 기운
+          </span>
+        </div>
+
+        {/* Mood — center piece */}
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="text-7xl mb-3">{result.moodEmoji}</div>
+          <div className="text-xl font-black text-gray-800">{result.moodLabel}</div>
+          <p className="mt-2 text-sm text-gray-600 text-center px-2">{result.moodReason}</p>
+        </div>
+
+        {/* Lucky item */}
+        <div className="bg-white/60 rounded-2xl p-3 mb-3 text-center">
+          <p className="text-xs font-bold text-gray-500 mb-1">오늘의 행운 아이템</p>
+          <p className="text-lg font-black text-gray-800">{result.luckyItemEmoji} {result.luckyItem}</p>
+        </div>
+
+        {/* Shareable quote */}
+        <div className="bg-white/80 rounded-2xl p-4 text-center">
+          <p className="text-xs font-bold text-purple-500 mb-1">✨ 오늘의 한 마디</p>
+          <p className="text-sm font-bold text-gray-800 leading-relaxed">{result.message}</p>
+        </div>
+
+        {/* Birthday special */}
+        {result.isBirthdayWeek && (
+          <div className="mt-3 text-center">
+            <span className="bg-yellow-300/80 rounded-full px-3 py-1 text-xs font-black text-yellow-800">
+              🎂 생일이 다가오고 있어요!
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Share button */}
+      <button
+        onClick={handleShare}
+        className="mt-6 flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 px-8 py-3 text-base font-black text-white shadow-lg active:scale-95 transition-all"
+      >
+        📤 공유하기
+      </button>
+    </div>
+  )
+}
