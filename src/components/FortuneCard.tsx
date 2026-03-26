@@ -18,18 +18,29 @@ const MOOD_GRADIENTS = [
 export default function FortuneCard({ result, today }: Props) {
   async function handleShare() {
     const text = `${result.petName}의 오늘 기분: ${result.moodLabel}\n"${result.message}"\n\n🐾 오늘의 운세`
-    if (navigator.share) {
-      await navigator.share({ title: `${result.petName}의 오늘 운세`, text })
-    } else {
-      await navigator.clipboard.writeText(text)
-      alert('클립보드에 복사됐어요! 📋')
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `${result.petName}의 오늘 운세`, text })
+      } else {
+        await navigator.clipboard.writeText(text)
+        alert('클립보드에 복사됐어요! 📋')
+      }
+    } catch {
+      try {
+        await navigator.clipboard.writeText(text)
+        alert('클립보드에 복사됐어요! 📋')
+      } catch {
+        // clipboard also unavailable - silently fail
+      }
     }
   }
+
+  const safeLevel = Math.max(0, Math.min(4, result.moodLevel))
 
   return (
     <div className="flex flex-col items-center">
       {/* 9:16 card */}
-      <div className={`w-full max-w-xs aspect-[9/16] rounded-3xl bg-gradient-to-b ${MOOD_GRADIENTS[result.moodLevel]} p-6 flex flex-col shadow-2xl`}>
+      <div className={`w-full max-w-xs aspect-[9/16] rounded-3xl bg-gradient-to-b ${MOOD_GRADIENTS[safeLevel]} p-6 flex flex-col shadow-2xl`}>
 
         {/* Header */}
         <div className="text-center mb-3">
@@ -79,6 +90,7 @@ export default function FortuneCard({ result, today }: Props) {
       {/* Share button */}
       <button
         onClick={handleShare}
+        aria-label="운세 공유하기"
         className="mt-6 flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 px-8 py-3 text-base font-black text-white shadow-lg active:scale-95 transition-all"
       >
         📤 공유하기
