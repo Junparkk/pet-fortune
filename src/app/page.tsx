@@ -10,7 +10,7 @@ export default function Home() {
           <p className="mt-2 text-sm text-gray-500">반려동물의 오늘 기분을 알아보세요!</p>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-xl p-6">
+        <div className="bg-white rounded-3xl shadow-xl p-6 overflow-hidden">
           <PetForm />
         </div>
 
