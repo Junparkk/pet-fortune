@@ -2,6 +2,7 @@ import {
   MOODS, LUCKY_ITEMS, MESSAGES,
   ZODIAC_ANIMALS, ZODIAC_EMOJIS,
   ELEMENT_NAMES, ELEMENT_EMOJIS,
+  BIRTHDAY_MESSAGE,
 } from './messages'
 
 export interface FortuneResult {
@@ -21,10 +22,10 @@ export interface FortuneResult {
 }
 
 // Month index (0=Jan) → element index (0=木 1=火 2=土 3=金 4=水)
-const MONTH_TO_ELEMENT = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 0, 0]
+const MONTH_TO_ELEMENT = [4, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 0]
 
 export function hashString(s: string): number {
-  return s.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  return s.split('').reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) >>> 0, 0)
 }
 
 export function getZodiacIndex(birthYear: number): number {
@@ -48,11 +49,12 @@ export function getElementCompatibility(petElement: number, todayElement: number
 
 export function checkBirthdayWeek(birthday: Date, today: Date): boolean {
   const yr = today.getFullYear()
+  const todayDateOnly = new Date(yr, today.getMonth(), today.getDate())
   let next = new Date(yr, birthday.getMonth(), birthday.getDate())
-  if (next.getTime() < today.getTime()) {
+  if (next < todayDateOnly) {
     next = new Date(yr + 1, birthday.getMonth(), birthday.getDate())
   }
-  const diffDays = Math.floor((next.getTime() - today.getTime()) / 86_400_000)
+  const diffDays = Math.floor((next.getTime() - todayDateOnly.getTime()) / 86_400_000)
   return diffDays <= 7
 }
 
@@ -78,9 +80,7 @@ export function getFortuneResult(petName: string, birthday: Date, today: Date): 
     moodReason:    MOODS[moodLevel].reason,
     luckyItem:     LUCKY_ITEMS[luckyIndex].name,
     luckyItemEmoji:LUCKY_ITEMS[luckyIndex].emoji,
-    message: isBirthdayWeek
-      ? '🎂 생일이 다가오고 있어요! 오늘은 특별한 간식이 행운을 불러와요!'
-      : MESSAGES[messageIndex],
+    message: isBirthdayWeek ? BIRTHDAY_MESSAGE : MESSAGES[messageIndex],
     zodiacAnimal:  ZODIAC_ANIMALS[zodiacIndex],
     zodiacEmoji:   ZODIAC_EMOJIS[zodiacIndex],
     element:       ELEMENT_NAMES[petElement],

@@ -46,3 +46,5 @@ export const ZODIAC_ANIMALS = ['쥐', '소', '호랑이', '토끼', '용', '뱀'
 export const ZODIAC_EMOJIS  = ['🐭', '🐮', '🐯', '🐰', '🐲', '🐍', '🐴', '🐑', '🐵', '🐔', '🐕', '🐷']
 export const ELEMENT_NAMES  = ['나무', '불', '흙', '금', '물']
 export const ELEMENT_EMOJIS = ['🌿', '🔥', '🌍', '⚡', '💧']
+
+export const BIRTHDAY_MESSAGE = '🎂 생일이 다가오고 있어요! 오늘은 특별한 간식이 행운을 불러와요!'

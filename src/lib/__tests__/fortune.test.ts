@@ -38,14 +38,17 @@ describe('getZodiacIndex', () => {
 })
 
 describe('getPetElement', () => {
-  it('maps January (0) to Wood (0)', () => {
-    expect(getPetElement(0)).toBe(0)
+  it('maps January (0) to Water (4)', () => {
+    expect(getPetElement(0)).toBe(4)
   })
-  it('maps May (4) to Earth (2)', () => {
-    expect(getPetElement(4)).toBe(2)
+  it('maps February (1) to Wood (0)', () => {
+    expect(getPetElement(1)).toBe(0)
   })
-  it('maps July (6) to Metal (3)', () => {
-    expect(getPetElement(6)).toBe(3)
+  it('maps May (4) to Fire (1)', () => {
+    expect(getPetElement(4)).toBe(1)
+  })
+  it('maps July (6) to Earth (2)', () => {
+    expect(getPetElement(6)).toBe(2)
   })
   it('always returns value in 0-4', () => {
     for (let m = 0; m < 12; m++) {
