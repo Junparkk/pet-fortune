@@ -28,15 +28,13 @@ export default function FortuneCard({ result, today }: Props) {
     if (!el) return
     const timer = setTimeout(async () => {
       try {
-        const html2canvas = (await import('html2canvas')).default
-        const canvas = await html2canvas(el, { scale: 2, useCORS: true })
-        const dataUrl = canvas.toDataURL('image/png')
-        const blob = await new Promise<Blob>((resolve, reject) =>
-          canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png')
-        )
+        const { toPng, toBlob } = await import('html-to-image')
+        const dataUrl = await toPng(el, { pixelRatio: 2 })
+        const blob = await toBlob(el, { pixelRatio: 2 })
+        if (!blob) throw new Error('toBlob returned null')
         setCaptured({ file: new File([blob], `${result.petName}-운세.png`, { type: 'image/png' }), dataUrl })
-      } catch {
-        // capture failed — share button will be disabled
+      } catch (err) {
+        console.error('[FortuneCard] capture failed:', err)
       } finally {
         setIsCapturing(false)
       }
@@ -46,23 +44,35 @@ export default function FortuneCard({ result, today }: Props) {
 
   // Called synchronously within user gesture — no await before navigator.share
   function handleShare() {
-    if (!captured) return
-    const { file, dataUrl } = captured
-
-    if (navigator.share) {
-      try {
-        navigator.share({ files: [file], title: `${result.petName}의 오늘 운세` })
-          .catch(err => {
-            if (err instanceof Error && err.name === 'AbortError') return
-            setPreviewUrl(dataUrl) // share failed → show overlay
-          })
-        return
-      } catch {
-        // synchronous throw (browser doesn't support files param)
+    // Image captured — try file share, then overlay fallback
+    if (captured) {
+      const { file, dataUrl } = captured
+      if (navigator.share) {
+        try {
+          navigator.share({ files: [file], title: `${result.petName}의 오늘 운세` })
+            .catch(err => {
+              if (err instanceof Error && err.name === 'AbortError') return
+              setPreviewUrl(dataUrl)
+            })
+          return
+        } catch {
+          // synchronous throw — browser doesn't support files param, fall through
+        }
       }
+      setPreviewUrl(dataUrl)
+      return
     }
 
-    setPreviewUrl(dataUrl)
+    // Capture failed — fall back to text share
+    const shareText = `${result.petName}의 오늘 운세\n${result.moodEmoji} ${result.moodLabel}\n${result.message}`
+    if (navigator.share) {
+      navigator.share({ title: `${result.petName}의 오늘 운세`, text: shareText })
+        .catch(err => { if (!(err instanceof Error && err.name === 'AbortError')) console.error(err) })
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareText)
+        .then(() => alert('운세가 클립보드에 복사되었어요!'))
+        .catch(() => alert(shareText))
+    }
   }
 
   const safeLevel = Math.max(0, Math.min(4, result.moodLevel))
@@ -120,7 +130,7 @@ export default function FortuneCard({ result, today }: Props) {
       {/* Share button */}
       <button
         onClick={handleShare}
-        disabled={isCapturing || !captured}
+        disabled={isCapturing}
         aria-label="운세 공유하기"
         className="mt-6 flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 px-8 py-3 text-base font-black text-white shadow-lg active:scale-95 transition-all disabled:opacity-50"
       >
