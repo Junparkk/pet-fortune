@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef } from 'react'
 import { FortuneResult } from '@/lib/fortune'
 
 interface Props {
@@ -16,22 +17,32 @@ const MOOD_GRADIENTS = [
 ]
 
 export default function FortuneCard({ result, today }: Props) {
+  const cardRef = useRef<HTMLDivElement>(null)
+
   async function handleShare() {
-    const text = `${result.petName}의 오늘 기분: ${result.moodLabel}\n"${result.message}"\n\n🐾 오늘의 운세`
+    if (!cardRef.current) return
     try {
-      if (navigator.share) {
-        await navigator.share({ title: `${result.petName}의 오늘 운세`, text })
+      const html2canvas = (await import('html2canvas')).default
+      const canvas = await html2canvas(cardRef.current, { scale: 2, useCORS: true })
+      const blob = await new Promise<Blob>((resolve, reject) =>
+        canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png')
+      )
+      const file = new File([blob], `${result.petName}-운세.png`, { type: 'image/png' })
+
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: `${result.petName}의 오늘 운세` })
       } else {
-        await navigator.clipboard.writeText(text)
-        alert('클립보드에 복사됐어요! 📋')
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${result.petName}-운세.png`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        setTimeout(() => URL.revokeObjectURL(url), 0)
       }
-    } catch {
-      try {
-        await navigator.clipboard.writeText(text)
-        alert('클립보드에 복사됐어요! 📋')
-      } catch {
-        // clipboard also unavailable - silently fail
-      }
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return
     }
   }
 
@@ -40,7 +51,7 @@ export default function FortuneCard({ result, today }: Props) {
   return (
     <div className="flex flex-col items-center">
       {/* 9:16 card */}
-      <div className={`w-full max-w-xs aspect-[9/16] rounded-3xl bg-gradient-to-b ${MOOD_GRADIENTS[safeLevel]} p-6 flex flex-col shadow-2xl`}>
+      <div ref={cardRef} className={`w-full max-w-xs aspect-[9/16] rounded-3xl bg-gradient-to-b ${MOOD_GRADIENTS[safeLevel]} p-6 flex flex-col shadow-2xl`}>
 
         {/* Header */}
         <div className="text-center mb-3">
