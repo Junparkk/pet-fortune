@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { FortuneResult } from '@/lib/fortune'
 
 interface Props {
@@ -18,31 +18,33 @@ const MOOD_GRADIENTS = [
 
 export default function FortuneCard({ result, today }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   async function handleShare() {
     if (!cardRef.current) return
     try {
       const html2canvas = (await import('html2canvas')).default
       const canvas = await html2canvas(cardRef.current, { scale: 2, useCORS: true })
+
+      // Try native file share first (supported on some mobile browsers)
       const blob = await new Promise<Blob>((resolve, reject) =>
         canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png')
       )
       const file = new File([blob], `${result.petName}-운세.png`, { type: 'image/png' })
-
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: `${result.petName}의 오늘 운세` })
-      } else {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${result.petName}-운세.png`
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        setTimeout(() => URL.revokeObjectURL(url), 0)
+        try {
+          await navigator.share({ files: [file], title: `${result.petName}의 오늘 운세` })
+          return
+        } catch (err) {
+          if (err instanceof Error && err.name === 'AbortError') return
+          // share failed — fall through to preview
+        }
       }
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return
+
+      // Fallback: show image in overlay (works in all in-app browsers)
+      setPreviewUrl(canvas.toDataURL('image/png'))
+    } catch {
+      // silently fail
     }
   }
 
@@ -106,6 +108,28 @@ export default function FortuneCard({ result, today }: Props) {
       >
         📤 공유하기
       </button>
+
+      {/* Image preview overlay */}
+      {previewUrl && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 px-4"
+          onClick={() => setPreviewUrl(null)}
+        >
+          <p className="mb-4 text-sm font-bold text-white">꾹 눌러서 이미지 저장하세요 📸</p>
+          <img
+            src={previewUrl}
+            alt="운세 카드"
+            className="max-w-xs w-full rounded-2xl shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          />
+          <button
+            onClick={() => setPreviewUrl(null)}
+            className="mt-6 rounded-full bg-white/20 px-6 py-2 text-sm font-bold text-white"
+          >
+            닫기
+          </button>
+        </div>
+      )}
     </div>
   )
 }
