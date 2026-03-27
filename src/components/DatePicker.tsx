@@ -54,8 +54,8 @@ export default function DatePicker({ value, onChange, max, className }: DatePick
           onSelect={handleSelect}
           disabled={(date) => date > maxDate}
           captionLayout="dropdown"
-          fromYear={2000}
-          toYear={maxDate.getFullYear()}
+          startMonth={new Date(2000, 0)}
+          endMonth={maxDate}
         />
       </PopoverContent>
     </Popover>
