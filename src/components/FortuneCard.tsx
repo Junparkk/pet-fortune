@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { FortuneResult } from '@/lib/fortune'
 
 interface Props {
@@ -19,33 +19,41 @@ const MOOD_GRADIENTS = [
 export default function FortuneCard({ result, today }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [captured, setCaptured] = useState<{ file: File; dataUrl: string } | null>(null)
+  const [isCapturing, setIsCapturing] = useState(true)
 
-  async function handleShare() {
-    if (!cardRef.current) return
-    try {
-      const html2canvas = (await import('html2canvas')).default
-      const canvas = await html2canvas(cardRef.current, { scale: 2, useCORS: true })
-
-      // Try native file share first (supported on some mobile browsers)
-      const blob = await new Promise<Blob>((resolve, reject) =>
-        canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png')
-      )
-      const file = new File([blob], `${result.petName}-운세.png`, { type: 'image/png' })
-      if (navigator.canShare?.({ files: [file] })) {
-        try {
-          await navigator.share({ files: [file], title: `${result.petName}의 오늘 운세` })
-          return
-        } catch (err) {
-          if (err instanceof Error && err.name === 'AbortError') return
-          // share failed — fall through to preview
-        }
+  // Pre-capture card as image on mount so share can be called synchronously
+  useEffect(() => {
+    const el = cardRef.current
+    if (!el) return
+    const timer = setTimeout(async () => {
+      try {
+        const html2canvas = (await import('html2canvas')).default
+        const canvas = await html2canvas(el, { scale: 2, useCORS: true })
+        const dataUrl = canvas.toDataURL('image/png')
+        const blob = await new Promise<Blob>((resolve, reject) =>
+          canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png')
+        )
+        setCaptured({ file: new File([blob], `${result.petName}-운세.png`, { type: 'image/png' }), dataUrl })
+      } catch {
+        // capture failed — share button will be disabled
+      } finally {
+        setIsCapturing(false)
       }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [result.petName])
 
-      // Fallback: show image in overlay (works in all in-app browsers)
-      setPreviewUrl(canvas.toDataURL('image/png'))
-    } catch {
-      // silently fail
+  // Called synchronously within user gesture — navigator.share can be called directly
+  function handleShare() {
+    if (!captured) return
+    const { file, dataUrl } = captured
+    if (navigator.canShare?.({ files: [file] })) {
+      navigator.share({ files: [file], title: `${result.petName}의 오늘 운세` })
+        .catch(err => { if (!(err instanceof Error && err.name === 'AbortError')) setPreviewUrl(dataUrl) })
+      return
     }
+    setPreviewUrl(dataUrl)
   }
 
   const safeLevel = Math.max(0, Math.min(4, result.moodLevel))
@@ -103,10 +111,11 @@ export default function FortuneCard({ result, today }: Props) {
       {/* Share button */}
       <button
         onClick={handleShare}
+        disabled={isCapturing || !captured}
         aria-label="운세 공유하기"
-        className="mt-6 flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 px-8 py-3 text-base font-black text-white shadow-lg active:scale-95 transition-all"
+        className="mt-6 flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 px-8 py-3 text-base font-black text-white shadow-lg active:scale-95 transition-all disabled:opacity-50"
       >
-        📤 공유하기
+        {isCapturing ? '⏳ 준비 중...' : '📤 공유하기'}
       </button>
 
       {/* Image preview overlay */}
