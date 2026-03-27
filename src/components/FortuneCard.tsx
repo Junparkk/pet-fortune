@@ -44,15 +44,24 @@ export default function FortuneCard({ result, today }: Props) {
     return () => clearTimeout(timer)
   }, [result.petName])
 
-  // Called synchronously within user gesture — navigator.share can be called directly
+  // Called synchronously within user gesture — no await before navigator.share
   function handleShare() {
     if (!captured) return
     const { file, dataUrl } = captured
-    if (navigator.canShare?.({ files: [file] })) {
-      navigator.share({ files: [file], title: `${result.petName}의 오늘 운세` })
-        .catch(err => { if (!(err instanceof Error && err.name === 'AbortError')) setPreviewUrl(dataUrl) })
-      return
+
+    if (navigator.share) {
+      try {
+        navigator.share({ files: [file], title: `${result.petName}의 오늘 운세` })
+          .catch(err => {
+            if (err instanceof Error && err.name === 'AbortError') return
+            setPreviewUrl(dataUrl) // share failed → show overlay
+          })
+        return
+      } catch {
+        // synchronous throw (browser doesn't support files param)
+      }
     }
+
     setPreviewUrl(dataUrl)
   }
 
