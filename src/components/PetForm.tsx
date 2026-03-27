@@ -2,6 +2,8 @@
 
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { Input } from '@/components/ui/input'
+import DatePicker from './DatePicker'
 
 export default function PetForm() {
   const router = useRouter()
@@ -23,7 +25,7 @@ export default function PetForm() {
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
       <div className="flex flex-col gap-2">
         <label htmlFor="pet-name" className="text-sm font-bold text-purple-600">반려동물 이름 🐾</label>
-        <input
+        <Input
           id="pet-name"
           type="text"
           value={name}
@@ -31,20 +33,16 @@ export default function PetForm() {
           placeholder="예) 희동이, 냥냥이"
           maxLength={10}
           required
-          className="w-full rounded-2xl border-2 border-pink-200 bg-white px-4 py-3 text-lg outline-none focus:border-pink-400 transition-colors placeholder:text-gray-300"
+          className="w-full rounded-2xl border-2 border-pink-200 bg-white px-4 py-3 text-lg outline-none focus-visible:ring-0 focus-visible:border-pink-400 transition-colors placeholder:text-gray-300 h-auto"
         />
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor="pet-birthday" className="text-sm font-bold text-purple-600">생년월일 🎂</label>
-        <input
-          id="pet-birthday"
-          type="date"
+        <label className="text-sm font-bold text-purple-600">생년월일 🎂</label>
+        <DatePicker
           value={birthday}
-          onChange={e => setBirthday(e.target.value)}
+          onChange={setBirthday}
           max={todayStr}
-          required
-          className="w-full rounded-2xl border-2 border-pink-200 bg-white px-4 py-3 text-lg outline-none focus:border-pink-400 transition-colors text-gray-700"
         />
       </div>
 
