@@ -10,9 +10,9 @@ export default function Home() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-3">
-            <Image src="/logo.png" alt="오늘의 댕운세" width={96} height={96} className="rounded-full" />
+            <Image src="/logo.png" alt="오늘의 멍운세" width={96} height={96} className="rounded-full" />
           </div>
-          <h1 className="text-3xl font-black text-violet-700">오늘의 댕운세</h1>
+          <h1 className="text-3xl font-black text-violet-700">오늘의 멍운세</h1>
           <p className="mt-2 text-sm text-violet-400">반려동물의 오늘 기분을 알아보세요!</p>
         </div>
 
