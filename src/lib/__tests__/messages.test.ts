@@ -11,7 +11,7 @@ describe('message pools', () => {
   })
 
   it('LUCKY_ITEMS has at least 10 entries with name and emoji', () => {
-    expect(LUCKY_ITEMS.length).toBeGreaterThanOrEqual(10)
+    expect(LUCKY_ITEMS.length).toBe(50)
     LUCKY_ITEMS.forEach(item => {
       expect(item.name).toBeTruthy()
       expect(item.emoji).toBeTruthy()
@@ -19,7 +19,7 @@ describe('message pools', () => {
   })
 
   it('MESSAGES has at least 20 entries', () => {
-    expect(MESSAGES.length).toBeGreaterThanOrEqual(20)
+    expect(MESSAGES.length).toBe(100)
     MESSAGES.forEach(msg => expect(msg).toBeTruthy())
   })
 
