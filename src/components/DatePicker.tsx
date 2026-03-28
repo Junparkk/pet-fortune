@@ -51,7 +51,7 @@ export default function DatePicker({ value, onChange, max, className }: DatePick
         <CalendarIcon className="mr-2 h-5 w-5 shrink-0 text-pink-300" />
         {value ? format(selected!, 'yyyy.MM.dd') : '생년월일을 선택하세요'}
       </PopoverTrigger>
-      <PopoverContent className="p-0" style={{ width: popoverWidth }} align="start" positionMethod="fixed" collisionPadding={0}>
+      <PopoverContent className="p-0" style={{ width: popoverWidth }} align="start" collisionPadding={0}>
         <Calendar
           mode="single"
           selected={selected}
@@ -60,8 +60,11 @@ export default function DatePicker({ value, onChange, max, className }: DatePick
           captionLayout="dropdown"
           startMonth={new Date(2000, 0)}
           endMonth={maxDate}
-          classNames={{ root: 'w-full rdp-root' }}
-          className="[--cell-size:1.25rem] p-1"
+          className="[--cell-size:1.5rem] p-1 [&_button[data-day]]:aspect-auto [&_button[data-day]]:h-full"
+          classNames={{
+            root: 'w-full rdp-root',
+            day: 'group/day relative h-7 w-full rounded-(--cell-radius) p-0 text-center select-none [&:last-child[data-selected=true]_button]:rounded-r-(--cell-radius) [&:first-child[data-selected=true]_button]:rounded-l-(--cell-radius)',
+          }}
         />
       </PopoverContent>
     </Popover>
