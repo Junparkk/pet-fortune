@@ -6,8 +6,11 @@ import { Input } from '@/components/ui/input'
 import DatePicker from './DatePicker'
 import LoadingScreen from './LoadingScreen'
 
+type PetType = 'dog' | 'cat'
+
 export default function PetForm() {
   const router = useRouter()
+  const [petType, setPetType] = useState<PetType>('dog')
   const [name, setName] = useState('')
   const [birthday, setBirthday] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -26,17 +29,43 @@ export default function PetForm() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (!name.trim() || !birthday) return
-    const params = new URLSearchParams({ name: name.trim(), birthday, today: todayStr })
+    const params = new URLSearchParams({ name: name.trim(), birthday, today: todayStr, petType })
     setIsLoading(true)
     timerRef.current = setTimeout(() => {
       router.push(`/result?${params.toString()}`)
     }, 3000)
   }
 
-  if (isLoading) return <LoadingScreen />
+  if (isLoading) return <LoadingScreen petType={petType} />
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
+      {/* 강아지/고양이 토글 */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setPetType('dog')}
+          className={`flex-1 rounded-full py-2 text-base font-black transition-colors ${
+            petType === 'dog'
+              ? 'bg-violet-500 text-white'
+              : 'border-2 border-violet-200 text-violet-400 bg-white'
+          }`}
+        >
+          🐶 강아지
+        </button>
+        <button
+          type="button"
+          onClick={() => setPetType('cat')}
+          className={`flex-1 rounded-full py-2 text-base font-black transition-colors ${
+            petType === 'cat'
+              ? 'bg-violet-500 text-white'
+              : 'border-2 border-violet-200 text-violet-400 bg-white'
+          }`}
+        >
+          🐱 고양이
+        </button>
+      </div>
+
       <div className="flex flex-col gap-2">
         <label htmlFor="pet-name" className="text-sm font-bold text-purple-600">반려동물 이름 🐾</label>
         <Input
