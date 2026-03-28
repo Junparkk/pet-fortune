@@ -1,25 +1,39 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import DatePicker from './DatePicker'
+import LoadingScreen from './LoadingScreen'
 
 export default function PetForm() {
   const router = useRouter()
   const [name, setName] = useState('')
   const [birthday, setBirthday] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const now = new Date()
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     if (!name.trim() || !birthday) return
     const params = new URLSearchParams({ name: name.trim(), birthday, today: todayStr })
-    router.push(`/result?${params.toString()}`)
+    setIsLoading(true)
+    timerRef.current = setTimeout(() => {
+      router.push(`/result?${params.toString()}`)
+    }, 3000)
   }
 
-  const now = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
-  const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+  if (isLoading) return <LoadingScreen />
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
