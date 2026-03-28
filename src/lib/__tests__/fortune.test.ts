@@ -163,6 +163,41 @@ describe('getFortuneResult — reasons array', () => {
   })
 })
 
+describe('getFortuneResult — petType cat', () => {
+  const petName = '야옹이'
+  const birthday = new Date(2021, 3, 10) // April 10, 2021
+  const today = new Date(2026, 2, 29)    // March 29, 2026
+
+  it('petType=cat이면 CAT_MESSAGES 범위 내 메시지를 반환한다', () => {
+    const r = getFortuneResult(petName, birthday, today, 'cat')
+    expect(CAT_MESSAGES).toContain(r.message)
+  })
+
+  it('petType=cat이면 CAT_LUCKY_ITEMS 범위 내 아이템을 반환한다', () => {
+    const r = getFortuneResult(petName, birthday, today, 'cat')
+    const found = CAT_LUCKY_ITEMS.some(item => item.name === r.luckyItem)
+    expect(found).toBe(true)
+  })
+
+  it('petType=cat이면 catReasons 중 하나를 반환한다', () => {
+    const r = getFortuneResult(petName, birthday, today, 'cat')
+    const mood = MOODS[r.moodLevel]
+    expect(mood.catReasons).toContain(r.moodReason)
+  })
+
+  it('petType=cat은 결정론적이다', () => {
+    const r1 = getFortuneResult(petName, birthday, today, 'cat')
+    const r2 = getFortuneResult(petName, birthday, today, 'cat')
+    expect(r1).toEqual(r2)
+  })
+
+  it('petType 기본값(dog)은 기존 동작을 유지한다', () => {
+    const r = getFortuneResult(petName, birthday, today)
+    const mood = MOODS[r.moodLevel]
+    expect(mood.reasons).toContain(r.moodReason)
+  })
+})
+
 describe('cat 데이터', () => {
   it('CAT_MESSAGES 길이는 100이다', () => {
     expect(CAT_MESSAGES.length).toBe(100)

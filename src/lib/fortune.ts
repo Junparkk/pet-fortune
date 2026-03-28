@@ -1,5 +1,6 @@
 import {
   MOODS, LUCKY_ITEMS, MESSAGES,
+  CAT_LUCKY_ITEMS, CAT_MESSAGES, CAT_BIRTHDAY_MESSAGE,
   ZODIAC_ANIMALS, ZODIAC_EMOJIS,
   ELEMENT_NAMES, ELEMENT_EMOJIS,
   BIRTHDAY_MESSAGE,
@@ -58,18 +59,29 @@ export function checkBirthdayWeek(birthday: Date, today: Date): boolean {
   return diffDays <= 7
 }
 
-export function getFortuneResult(petName: string, birthday: Date, today: Date): FortuneResult {
-  const nameHash     = hashString(petName)
-  const petElement   = getPetElement(birthday.getMonth())
-  const todayElement = today.getDate() % 5
-  const compat       = getElementCompatibility(petElement, todayElement)
-  const zodiacIndex  = getZodiacIndex(birthday.getFullYear())
+export function getFortuneResult(
+  petName: string,
+  birthday: Date,
+  today: Date,
+  petType: 'dog' | 'cat' = 'dog',
+): FortuneResult {
+  const isCat       = petType === 'cat'
+  const nameHash    = hashString(petName)
+  const petElement  = getPetElement(birthday.getMonth())
+  const todayElement= today.getDate() % 5
+  const compat      = getElementCompatibility(petElement, todayElement)
+  const zodiacIndex = getZodiacIndex(birthday.getFullYear())
 
   const dayFactor  = (today.getDay() + today.getDate() + nameHash) % 5
   const moodLevel  = ((compat + 2) + dayFactor) % 5
 
-  const luckyIndex   = (nameHash + zodiacIndex + today.getMonth() + today.getDate()) % LUCKY_ITEMS.length
-  const messageIndex = (nameHash + today.getDate() * 7 + today.getMonth() * 31) % MESSAGES.length
+  const messages   = isCat ? CAT_MESSAGES   : MESSAGES
+  const luckyItems = isCat ? CAT_LUCKY_ITEMS : LUCKY_ITEMS
+  const bdayMsg    = isCat ? CAT_BIRTHDAY_MESSAGE : BIRTHDAY_MESSAGE
+  const reasons    = isCat ? MOODS[moodLevel].catReasons : MOODS[moodLevel].reasons
+
+  const luckyIndex   = (nameHash + zodiacIndex + today.getMonth() + today.getDate()) % luckyItems.length
+  const messageIndex = (nameHash + today.getDate() * 7 + today.getMonth() * 31) % messages.length
 
   const isBirthdayWeek = checkBirthdayWeek(birthday, today)
 
@@ -77,10 +89,10 @@ export function getFortuneResult(petName: string, birthday: Date, today: Date): 
     moodLevel,
     moodLabel:     MOODS[moodLevel].label,
     moodEmoji:     MOODS[moodLevel].emoji,
-    moodReason:    MOODS[moodLevel].reasons[(nameHash + today.getDate()) % MOODS[moodLevel].reasons.length],
-    luckyItem:     LUCKY_ITEMS[luckyIndex].name,
-    luckyItemEmoji:LUCKY_ITEMS[luckyIndex].emoji,
-    message: isBirthdayWeek ? BIRTHDAY_MESSAGE : MESSAGES[messageIndex],
+    moodReason:    reasons[(nameHash + today.getDate()) % reasons.length],
+    luckyItem:     luckyItems[luckyIndex].name,
+    luckyItemEmoji:luckyItems[luckyIndex].emoji,
+    message: isBirthdayWeek ? bdayMsg : messages[messageIndex],
     zodiacAnimal:  ZODIAC_ANIMALS[zodiacIndex],
     zodiacEmoji:   ZODIAC_EMOJIS[zodiacIndex],
     element:       ELEMENT_NAMES[petElement],
