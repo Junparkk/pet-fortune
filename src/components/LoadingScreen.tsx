@@ -25,14 +25,19 @@ export default function LoadingScreen() {
           🐶
         </div>
         <div
-          className="rounded-full"
+          className="rounded-full relative overflow-hidden"
           style={{
             width: '180px',
             height: '180px',
-            background: 'radial-gradient(circle at 35% 35%, #e8e8e8, #a0a0a0 40%, #505050 80%, #202020)',
-            boxShadow: '0 0 40px 15px rgba(160, 140, 255, 0.4), inset 0 0 20px rgba(255,255,255,0.2)',
+            background: 'radial-gradient(circle at 32% 28%, rgba(255,255,255,0.95) 0%, rgba(215,225,255,0.8) 18%, rgba(160,175,240,0.65) 38%, rgba(90,100,200,0.8) 62%, rgba(15,10,70,0.97) 100%)',
+            boxShadow: '0 0 55px 22px rgba(120,90,255,0.55), 0 12px 40px rgba(0,0,60,0.5), inset 0 0 35px rgba(70,50,200,0.25)',
           }}
-        />
+        >
+          {/* 주 반사광 */}
+          <div style={{ position:'absolute', width:'65px', height:'42px', top:'10%', left:'14%', background:'radial-gradient(ellipse, rgba(255,255,255,0.95), transparent 70%)', filter:'blur(5px)', borderRadius:'50%' }} />
+          {/* 보조 반사광 */}
+          <div style={{ position:'absolute', width:'26px', height:'16px', bottom:'19%', right:'18%', background:'radial-gradient(ellipse, rgba(255,255,255,0.55), transparent 70%)', filter:'blur(3px)', borderRadius:'50%' }} />
+        </div>
       </div>
 
       {/* 텍스트 */}

@@ -47,7 +47,7 @@ export default function PetForm() {
           placeholder="예) 희동이, 냥냥이"
           maxLength={10}
           required
-          className="w-full rounded-2xl border-2 border-pink-200 bg-white px-4 py-3 text-lg outline-none focus-visible:ring-0 focus-visible:border-pink-400 transition-colors placeholder:text-gray-300 h-auto"
+          className="w-full rounded-2xl border-2 border-violet-200 bg-white px-4 py-3 text-lg outline-none focus-visible:ring-0 focus-visible:border-violet-400 transition-colors placeholder:text-gray-300 h-auto"
         />
       </div>
 
@@ -63,7 +63,7 @@ export default function PetForm() {
       <button
         type="submit"
         disabled={!name.trim() || !birthday}
-        className="mt-2 w-full rounded-full bg-gradient-to-r from-pink-400 to-purple-400 py-4 text-lg font-black text-white shadow-lg transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="mt-2 w-full rounded-full bg-gradient-to-r from-violet-500 to-purple-600 py-4 text-lg font-black text-white shadow-lg transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
       >
         오늘의 운세 보기 ✨
       </button>

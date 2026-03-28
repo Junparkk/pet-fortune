@@ -12,7 +12,7 @@ const notoSansKR = Noto_Sans_KR({
 })
 
 export const metadata: Metadata = {
-  title: '🐾 오늘의 운세',
+  title: '오늘의 댕운세',
   description: '반려동물의 오늘 기분을 알아보세요!',
 }
 
