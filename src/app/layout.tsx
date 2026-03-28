@@ -12,23 +12,23 @@ const notoSansKR = Noto_Sans_KR({
 })
 
 export const metadata: Metadata = {
-  title: '오늘의 멍운세',
-  description: '우리 강아지 오늘의 운세를 확인해보세요!',
+  title: '오늘의 멍냥운세',
+  description: '우리 강아지, 고양이 오늘의 운세를 확인해보세요!',
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
   },
   openGraph: {
-    title: '오늘의 멍운세',
-    description: '우리 강아지 오늘의 운세를 확인해보세요!',
+    title: '오늘의 멍냥운세',
+    description: '우리 강아지, 고양이 오늘의 운세를 확인해보세요!',
     images: [{ url: '/logo.png', width: 600, height: 600 }],
     type: 'website',
     locale: 'ko_KR',
   },
   twitter: {
     card: 'summary',
-    title: '오늘의 멍운세',
-    description: '우리 강아지 오늘의 운세를 확인해보세요!',
+    title: '오늘의 멍냥운세',
+    description: '우리 강아지, 고양이 오늘의 운세를 확인해보세요!',
     images: ['/logo.png'],
   },
 }
