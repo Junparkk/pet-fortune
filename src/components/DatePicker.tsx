@@ -61,6 +61,7 @@ export default function DatePicker({ value, onChange, max, className }: DatePick
           startMonth={new Date(2000, 0)}
           endMonth={maxDate}
           classNames={{ root: 'w-full rdp-root' }}
+          style={{ '--cell-size': '1.5rem' } as React.CSSProperties}
         />
       </PopoverContent>
     </Popover>
