@@ -47,7 +47,7 @@ export default function PetForm() {
           placeholder="예) 희동이, 냥냥이"
           maxLength={10}
           required
-          className="w-full rounded-2xl border-2 border-violet-200 bg-white px-4 py-3 text-lg outline-none focus-visible:ring-0 focus-visible:border-violet-400 transition-colors placeholder:text-gray-300 h-auto"
+          className="w-full rounded-2xl border-2 border-violet-200 bg-white px-4 py-3 text-lg md:text-lg outline-none focus-visible:ring-0 focus-visible:border-violet-400 transition-colors placeholder:text-gray-300 h-auto"
         />
       </div>
 
