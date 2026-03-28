@@ -6,7 +6,7 @@ import {
   checkBirthdayWeek,
   getFortuneResult,
 } from '../fortune'
-import { MOODS } from '../messages'
+import { MOODS, MESSAGES, LUCKY_ITEMS } from '../messages'
 
 describe('hashString', () => {
   it('is deterministic', () => {
@@ -155,12 +155,10 @@ describe('getFortuneResult — reasons array', () => {
   })
 
   it('MESSAGES 길이는 100이다', () => {
-    const { MESSAGES } = require('../messages')
     expect(MESSAGES.length).toBe(100)
   })
 
   it('LUCKY_ITEMS 길이는 50이다', () => {
-    const { LUCKY_ITEMS } = require('../messages')
     expect(LUCKY_ITEMS.length).toBe(50)
   })
 })
