@@ -3,11 +3,11 @@ import { getFortuneResult } from '@/lib/fortune'
 import FortuneCard from '@/components/FortuneCard'
 
 interface Props {
-  searchParams: Promise<{ name?: string; birthday?: string; today?: string }>
+  searchParams: Promise<{ name?: string; birthday?: string; today?: string; petType?: string }>
 }
 
 export default async function ResultPage({ searchParams }: Props) {
-  const { name, birthday, today: todayParam } = await searchParams
+  const { name, birthday, today: todayParam, petType: petTypeParam } = await searchParams
 
   if (!name || !birthday) {
     return (
@@ -40,13 +40,14 @@ export default async function ResultPage({ searchParams }: Props) {
     ? new Date(tParts[0], tParts[1] - 1, tParts[2])
     : new Date()
 
-  const result = getFortuneResult(name, birthdayDate, today)
+  const petType = petTypeParam === 'cat' ? 'cat' : 'dog'
+  const result = getFortuneResult(name, birthdayDate, today, petType)
   const todayFormatted = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4 py-8">
       <div className="w-full max-w-xs">
-        <FortuneCard result={result} today={todayFormatted} />
+        <FortuneCard result={result} today={todayFormatted} petType={petType} />
         <div className="mt-4 text-center">
           <Link href="/" className="text-sm text-gray-400 underline underline-offset-2">
             ← 다른 반려동물 보기
