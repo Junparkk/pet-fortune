@@ -11,9 +11,9 @@ export default function LoadingScreen() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <span className="absolute text-xl" style={{ top: '10%', left: '15%', animation: 'twinkle 2s ease-in-out infinite' }}>⭐</span>
         <span className="absolute text-sm" style={{ top: '15%', right: '20%', animation: 'twinkle 2.5s ease-in-out infinite 0.5s' }}>✨</span>
-        <span className="absolute text-base" style={{ top: '25%', left: '70%', animation: 'twinkle 1.8s ease-in-out infinite 1s' }}>⭐</span>
-        <span className="absolute text-sm" style={{ top: '8%', left: '50%', animation: 'twinkle 2.2s ease-in-out infinite 0.3s' }}>✨</span>
-        <span className="absolute text-xl" style={{ top: '20%', left: '35%', animation: 'twinkle 3s ease-in-out infinite 0.8s' }}>⭐</span>
+        <span className="absolute text-base" style={{ top: '70%', left: '10%', animation: 'twinkle 1.8s ease-in-out infinite 1s' }}>⭐</span>
+        <span className="absolute text-sm" style={{ top: '80%', right: '15%', animation: 'twinkle 2.2s ease-in-out infinite 0.3s' }}>✨</span>
+        <span className="absolute text-xl" style={{ top: '60%', right: '8%', animation: 'twinkle 3s ease-in-out infinite 0.8s' }}>⭐</span>
       </div>
 
       {/* 강아지 + 유리구슬 */}
