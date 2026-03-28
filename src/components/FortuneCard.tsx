@@ -6,6 +6,7 @@ import { FortuneResult } from '@/lib/fortune'
 interface Props {
   result: FortuneResult
   today: string
+  petType?: 'dog' | 'cat'
 }
 
 const MOOD_GRADIENTS = [
@@ -16,7 +17,7 @@ const MOOD_GRADIENTS = [
   'from-rose-200 to-pink-200',
 ]
 
-export default function FortuneCard({ result, today }: Props) {
+export default function FortuneCard({ result, today, petType = 'dog' }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [captured, setCaptured] = useState<{ file: File; dataUrl: string } | null>(null)
@@ -85,7 +86,9 @@ export default function FortuneCard({ result, today }: Props) {
         {/* Header */}
         <div className="text-center mb-3">
           <p className="text-xs font-bold text-gray-500">{today}</p>
-          <h2 className="text-xl font-black text-gray-800 mt-1">{result.petName}의 오늘 운세</h2>
+          <h2 className="text-xl font-black text-gray-800 mt-1">
+            {result.petName}의 {petType === 'cat' ? '오늘의 냥운세' : '오늘의 멍운세'}
+          </h2>
         </div>
 
         {/* Zodiac + Element badges */}
