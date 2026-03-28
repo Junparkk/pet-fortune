@@ -45,12 +45,13 @@ export default function FortuneCard({ result, today, petType = 'dog' }: Props) {
 
   // Called synchronously within user gesture — no await before navigator.share
   function handleShare() {
+    const fortuneTitle = petType === 'cat' ? '오늘의 냥운세' : '오늘의 멍운세'
     // Image captured — try file share, then overlay fallback
     if (captured) {
       const { file, dataUrl } = captured
       if (navigator.share) {
         try {
-          navigator.share({ files: [file], title: `${result.petName}의 오늘 운세` })
+          navigator.share({ files: [file], title: `${result.petName}의 ${fortuneTitle}` })
             .catch(err => {
               if (err instanceof Error && err.name === 'AbortError') return
               setPreviewUrl(dataUrl)
@@ -65,9 +66,9 @@ export default function FortuneCard({ result, today, petType = 'dog' }: Props) {
     }
 
     // Capture failed — fall back to text share
-    const shareText = `${result.petName}의 오늘 운세\n${result.moodEmoji} ${result.moodLabel}\n${result.message}`
+    const shareText = `${result.petName}의 ${fortuneTitle}\n${result.moodEmoji} ${result.moodLabel}\n${result.message}`
     if (navigator.share) {
-      navigator.share({ title: `${result.petName}의 오늘 운세`, text: shareText })
+      navigator.share({ title: `${result.petName}의 ${fortuneTitle}`, text: shareText })
         .catch(err => { if (!(err instanceof Error && err.name === 'AbortError')) console.error(err) })
     } else if (navigator.clipboard) {
       navigator.clipboard.writeText(shareText)
