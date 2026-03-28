@@ -51,7 +51,7 @@ export default function DatePicker({ value, onChange, max, className }: DatePick
         <CalendarIcon className="mr-2 h-5 w-5 shrink-0 text-pink-300" />
         {value ? format(selected!, 'yyyy.MM.dd') : '생년월일을 선택하세요'}
       </PopoverTrigger>
-      <PopoverContent className="p-0" style={{ width: popoverWidth }} align="start">
+      <PopoverContent className="p-0" style={{ width: popoverWidth }} align="start" positionMethod="fixed">
         <Calendar
           mode="single"
           selected={selected}
