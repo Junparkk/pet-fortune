@@ -6,6 +6,7 @@ import {
   checkBirthdayWeek,
   getFortuneResult,
 } from '../fortune'
+import { MOODS } from '../messages'
 
 describe('hashString', () => {
   it('is deterministic', () => {
@@ -134,5 +135,32 @@ describe('getFortuneResult', () => {
                     r1.luckyItem !== r2.luckyItem ||
                     r1.message   !== r2.message
     expect(differs).toBe(true)
+  })
+})
+
+describe('getFortuneResult — reasons array', () => {
+  const today = new Date('2026-03-28')
+  const birthday = new Date('2018-05-10')
+
+  it('moodReason은 해당 기분의 reasons 배열 중 하나여야 한다', () => {
+    const result = getFortuneResult('초코', birthday, today)
+    const mood = MOODS[result.moodLevel]
+    expect(mood.reasons).toContain(result.moodReason)
+  })
+
+  it('같은 입력은 항상 같은 moodReason을 반환한다', () => {
+    const r1 = getFortuneResult('초코', birthday, today)
+    const r2 = getFortuneResult('초코', birthday, today)
+    expect(r1.moodReason).toBe(r2.moodReason)
+  })
+
+  it('MESSAGES 길이는 100이다', () => {
+    const { MESSAGES } = require('../messages')
+    expect(MESSAGES.length).toBe(100)
+  })
+
+  it('LUCKY_ITEMS 길이는 50이다', () => {
+    const { LUCKY_ITEMS } = require('../messages')
+    expect(LUCKY_ITEMS.length).toBe(50)
   })
 })

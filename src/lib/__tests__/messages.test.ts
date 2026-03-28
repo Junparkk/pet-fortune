@@ -6,7 +6,7 @@ describe('message pools', () => {
     MOODS.forEach(mood => {
       expect(mood.label).toBeTruthy()
       expect(mood.emoji).toBeTruthy()
-      expect(mood.reason).toBeTruthy()
+      expect(mood.reasons.length).toBeGreaterThan(0)
     })
   })
 

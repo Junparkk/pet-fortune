@@ -77,7 +77,7 @@ export function getFortuneResult(petName: string, birthday: Date, today: Date): 
     moodLevel,
     moodLabel:     MOODS[moodLevel].label,
     moodEmoji:     MOODS[moodLevel].emoji,
-    moodReason:    MOODS[moodLevel].reason,
+    moodReason:    MOODS[moodLevel].reasons[(nameHash + today.getDate()) % MOODS[moodLevel].reasons.length],
     luckyItem:     LUCKY_ITEMS[luckyIndex].name,
     luckyItemEmoji:LUCKY_ITEMS[luckyIndex].emoji,
     message: isBirthdayWeek ? BIRTHDAY_MESSAGE : MESSAGES[messageIndex],
