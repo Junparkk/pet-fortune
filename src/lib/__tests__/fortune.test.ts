@@ -6,7 +6,7 @@ import {
   checkBirthdayWeek,
   getFortuneResult,
 } from '../fortune'
-import { MOODS, MESSAGES, LUCKY_ITEMS } from '../messages'
+import { MOODS, MESSAGES, LUCKY_ITEMS, CAT_MESSAGES, CAT_LUCKY_ITEMS } from '../messages'
 
 describe('hashString', () => {
   it('is deterministic', () => {
@@ -160,5 +160,22 @@ describe('getFortuneResult — reasons array', () => {
 
   it('LUCKY_ITEMS 길이는 50이다', () => {
     expect(LUCKY_ITEMS.length).toBe(50)
+  })
+})
+
+describe('cat 데이터', () => {
+  it('CAT_MESSAGES 길이는 100이다', () => {
+    expect(CAT_MESSAGES.length).toBe(100)
+  })
+
+  it('CAT_LUCKY_ITEMS 길이는 50이다', () => {
+    expect(CAT_LUCKY_ITEMS.length).toBe(50)
+  })
+
+  it('모든 MOODS에 catReasons가 3개씩 있다', () => {
+    MOODS.forEach(mood => {
+      expect(mood.catReasons).toBeDefined()
+      expect(mood.catReasons.length).toBe(3)
+    })
   })
 })
