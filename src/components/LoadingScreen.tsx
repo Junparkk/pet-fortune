@@ -1,4 +1,10 @@
-export default function LoadingScreen() {
+interface LoadingScreenProps {
+  petType?: 'dog' | 'cat'
+}
+
+export default function LoadingScreen({ petType = 'dog' }: LoadingScreenProps) {
+  const petEmoji = petType === 'cat' ? '🐱' : '🐶'
+
   return (
     <div
       className="fixed inset-0 z-50 flex flex-col items-center justify-center"
@@ -16,13 +22,13 @@ export default function LoadingScreen() {
         <span className="absolute text-xl" style={{ top: '60%', right: '8%', animation: 'twinkle 3s ease-in-out infinite 0.8s' }}>⭐</span>
       </div>
 
-      {/* 강아지 + 유리구슬 */}
+      {/* 동물 + 유리구슬 */}
       <div className="relative flex flex-col items-center">
         <div
           className="relative z-10 text-7xl"
           style={{ animation: 'bob 1.5s ease-in-out infinite', marginBottom: '-20px' }}
         >
-          🐶
+          {petEmoji}
         </div>
         <div
           className="rounded-full relative overflow-hidden"
