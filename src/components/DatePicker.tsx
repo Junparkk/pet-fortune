@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -16,6 +16,8 @@ interface DatePickerProps {
 
 export default function DatePicker({ value, onChange, max, className }: DatePickerProps) {
   const [open, setOpen] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined)
 
   const selected = value ? new Date(value + 'T00:00:00') : undefined
   const maxDate = new Date(max + 'T00:00:00')
@@ -28,9 +30,17 @@ export default function DatePicker({ value, onChange, max, className }: DatePick
     setOpen(false)
   }
 
+  function handleOpenChange(isOpen: boolean) {
+    if (isOpen && triggerRef.current) {
+      setPopoverWidth(triggerRef.current.offsetWidth)
+    }
+    setOpen(isOpen)
+  }
+
   return (
-    <Popover open={open} onOpenChange={(isOpen) => setOpen(isOpen)}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger
+        ref={triggerRef}
         className={cn(
           'flex w-full cursor-pointer items-center justify-start rounded-2xl border-2 border-violet-200 bg-white px-4 py-3 text-left text-lg font-normal',
           'transition-colors hover:border-violet-400 focus:border-violet-400 focus-visible:outline-none',
@@ -41,7 +51,7 @@ export default function DatePicker({ value, onChange, max, className }: DatePick
         <CalendarIcon className="mr-2 h-5 w-5 shrink-0 text-pink-300" />
         {value ? format(selected!, 'yyyy.MM.dd') : '생년월일을 선택하세요'}
       </PopoverTrigger>
-      <PopoverContent className="w-(--anchor-width) p-0" align="start">
+      <PopoverContent className="p-0" style={{ width: popoverWidth }} align="start">
         <Calendar
           mode="single"
           selected={selected}
