@@ -2,9 +2,13 @@
 
 import { useState, FormEvent, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { loadFullScreenAd, showFullScreenAd } from '@apps-in-toss/web-framework'
 import { Input } from '@/components/ui/input'
 import DatePicker from './DatePicker'
 import LoadingScreen from './LoadingScreen'
+
+const AD_GROUP_ID = 'ait.v2.live.b0c2a9d520164320'
+const AD_WAIT_TIMEOUT_MS = 10000
 
 type PetType = 'dog' | 'cat'
 
@@ -14,6 +18,7 @@ export default function PetForm() {
   const [name, setName] = useState('')
   const [birthday, setBirthday] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const navigatedRef = useRef(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const now = new Date()
@@ -30,10 +35,42 @@ export default function PetForm() {
     e.preventDefault()
     if (!name.trim() || !birthday) return
     const params = new URLSearchParams({ name: name.trim(), birthday, today: todayStr, petType })
+    const paramsStr = params.toString()
     setIsLoading(true)
-    timerRef.current = setTimeout(() => {
-      router.push(`/result?${params.toString()}`)
-    }, 3000)
+    navigatedRef.current = false
+
+    function navigate() {
+      if (navigatedRef.current) return
+      navigatedRef.current = true
+      if (timerRef.current) clearTimeout(timerRef.current)
+      router.push(`/result?${paramsStr}`)
+    }
+
+    if (!loadFullScreenAd.isSupported()) {
+      timerRef.current = setTimeout(navigate, 3000)
+      return
+    }
+
+    // 광고 로드 실패/타임아웃 시 안전 이동
+    timerRef.current = setTimeout(navigate, AD_WAIT_TIMEOUT_MS)
+
+    loadFullScreenAd({
+      options: { adGroupId: AD_GROUP_ID },
+      onEvent: (event) => {
+        if (event.type === 'loaded') {
+          showFullScreenAd({
+            options: { adGroupId: AD_GROUP_ID },
+            onEvent: (showEvent) => {
+              if (showEvent.type === 'dismissed' || showEvent.type === 'failedToShow') {
+                navigate()
+              }
+            },
+            onError: navigate,
+          })
+        }
+      },
+      onError: navigate,
+    })
   }
 
   if (isLoading) return <LoadingScreen petType={petType} />
