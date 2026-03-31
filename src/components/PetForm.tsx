@@ -47,7 +47,14 @@ export default function PetForm() {
       router.push(`/result?${paramsStr}`)
     }
 
-    const supported = GoogleAdMob.loadAppsInTossAdMob.isSupported()
+    let supported = false
+    try {
+      supported = GoogleAdMob.loadAppsInTossAdMob.isSupported()
+    } catch (e) {
+      setDebugMsg(`isSupported threw: ${e}`)
+      timerRef.current = setTimeout(navigate, 3000)
+      return
+    }
     setDebugMsg(`isSupported: ${supported}`)
 
     if (supported !== true) {
