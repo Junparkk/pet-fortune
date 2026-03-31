@@ -46,7 +46,10 @@ export default function PetForm() {
       router.push(`/result?${paramsStr}`)
     }
 
-    if (GoogleAdMob.loadAppsInTossAdMob.isSupported() !== true) {
+    const supported = GoogleAdMob.loadAppsInTossAdMob.isSupported()
+    console.log('[AD] isSupported:', supported)
+
+    if (supported !== true) {
       timerRef.current = setTimeout(navigate, 3000)
       return
     }
@@ -57,20 +60,22 @@ export default function PetForm() {
     const cleanup = GoogleAdMob.loadAppsInTossAdMob({
       options: { adGroupId: AD_GROUP_ID },
       onEvent: (event) => {
+        console.log('[AD] load event:', event.type)
         if (event.type === 'loaded') {
           cleanup()
           GoogleAdMob.showAppsInTossAdMob({
             options: { adGroupId: AD_GROUP_ID },
             onEvent: (showEvent) => {
+              console.log('[AD] show event:', showEvent.type)
               if (showEvent.type === 'dismissed' || showEvent.type === 'failedToShow') {
                 navigate()
               }
             },
-            onError: navigate,
+            onError: (e) => { console.log('[AD] show error:', e); navigate() },
           })
         }
       },
-      onError: navigate,
+      onError: (e) => { console.log('[AD] load error:', e); navigate() },
     })
   }
 
