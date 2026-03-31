@@ -11,7 +11,7 @@ export default function Home() {
           <div className="flex justify-center mb-3">
             <img src="/logo.png" alt="오늘의 멍냥운세" width={96} height={96} className="rounded-full" />
           </div>
-          <h1 className="text-3xl font-black text-violet-700">오늘의 멍냥운세</h1>
+          <h1 className="text-3xl font-black text-violet-700">어제의 멍냥운세</h1>
           <p className="mt-2 text-sm text-violet-400">강아지와 고양이의 오늘 기분을 알아보세요!</p>
         </div>
 
