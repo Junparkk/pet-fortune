@@ -2,7 +2,7 @@
 
 import { useState, FormEvent, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { loadFullScreenAd, showFullScreenAd } from '@apps-in-toss/web-framework'
+import { GoogleAdMob } from '@apps-in-toss/web-framework'
 import { Input } from '@/components/ui/input'
 import DatePicker from './DatePicker'
 import LoadingScreen from './LoadingScreen'
@@ -46,30 +46,32 @@ export default function PetForm() {
       router.push(`/result?${paramsStr}`)
     }
 
+    if (GoogleAdMob.loadAppsInTossAdMob.isSupported() !== true) {
+      timerRef.current = setTimeout(navigate, 3000)
+      return
+    }
+
     // 광고 로드 실패/타임아웃 시 안전 이동
     timerRef.current = setTimeout(navigate, AD_WAIT_TIMEOUT_MS)
 
-    try {
-      loadFullScreenAd({
-        options: { adGroupId: AD_GROUP_ID },
-        onEvent: (event) => {
-          if (event.type === 'loaded') {
-            showFullScreenAd({
-              options: { adGroupId: AD_GROUP_ID },
-              onEvent: (showEvent) => {
-                if (showEvent.type === 'dismissed' || showEvent.type === 'failedToShow') {
-                  navigate()
-                }
-              },
-              onError: navigate,
-            })
-          }
-        },
-        onError: navigate,
-      })
-    } catch {
-      navigate()
-    }
+    const cleanup = GoogleAdMob.loadAppsInTossAdMob({
+      options: { adGroupId: AD_GROUP_ID },
+      onEvent: (event) => {
+        if (event.type === 'loaded') {
+          cleanup()
+          GoogleAdMob.showAppsInTossAdMob({
+            options: { adGroupId: AD_GROUP_ID },
+            onEvent: (showEvent) => {
+              if (showEvent.type === 'dismissed' || showEvent.type === 'failedToShow') {
+                navigate()
+              }
+            },
+            onError: navigate,
+          })
+        }
+      },
+      onError: navigate,
+    })
   }
 
   if (isLoading) return <LoadingScreen petType={petType} />
