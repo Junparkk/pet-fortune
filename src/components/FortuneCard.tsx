@@ -1,7 +1,12 @@
 'use client'
 
 import { useRef, useState, useEffect } from 'react'
+import { TossAds } from '@apps-in-toss/web-framework'
 import { FortuneResult } from '@/lib/fortune'
+
+const BANNER_AD_GROUP_ID = process.env.NODE_ENV === 'production'
+  ? 'ait.v2.live.fa0e92cb2de943a1'
+  : 'ait-ad-test-banner-id'
 
 interface Props {
   result: FortuneResult
@@ -19,9 +24,34 @@ const MOOD_GRADIENTS = [
 
 export default function FortuneCard({ result, today, petType = 'dog' }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
+  const bannerRef = useRef<HTMLDivElement>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [captured, setCaptured] = useState<{ file: File; dataUrl: string } | null>(null)
   const [isCapturing, setIsCapturing] = useState(true)
+  const [isBannerReady, setIsBannerReady] = useState(false)
+
+  useEffect(() => {
+    try {
+      if (TossAds.initialize.isSupported() !== true) return
+      TossAds.initialize({
+        callbacks: {
+          onInitialized: () => setIsBannerReady(true),
+          onInitializationFailed: () => {},
+        },
+      })
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    if (!isBannerReady || !bannerRef.current) return
+    try {
+      const attached = TossAds.attachBanner(BANNER_AD_GROUP_ID, bannerRef.current, {
+        theme: 'auto',
+        variant: 'expanded',
+      })
+      return () => attached?.destroy()
+    } catch {}
+  }, [isBannerReady])
 
   // Pre-capture card as image on mount so share can be called synchronously
   useEffect(() => {
@@ -140,6 +170,9 @@ export default function FortuneCard({ result, today, petType = 'dog' }: Props) {
       >
         {isCapturing ? '⏳ 준비 중...' : '📤 공유하기'}
       </button>
+
+      {/* Banner ad */}
+      <div ref={bannerRef} style={{ width: '100%', height: '96px', marginTop: '16px' }} />
 
       {/* Image preview overlay */}
       {previewUrl && (

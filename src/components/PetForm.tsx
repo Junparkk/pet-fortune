@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input'
 import DatePicker from './DatePicker'
 import LoadingScreen from './LoadingScreen'
 
-const AD_GROUP_ID = 'ait-ad-test-interstitial-id'
+const AD_GROUP_ID = process.env.NODE_ENV === 'production'
+  ? 'ait.v2.live.b0c2a9d520164320'
+  : 'ait-ad-test-interstitial-id'
 const AD_WAIT_TIMEOUT_MS = 10000
 
 type PetType = 'dog' | 'cat'
@@ -18,7 +20,6 @@ export default function PetForm() {
   const [name, setName] = useState('')
   const [birthday, setBirthday] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [debugMsg, setDebugMsg] = useState('')
   const navigatedRef = useRef(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -50,12 +51,10 @@ export default function PetForm() {
     let supported = false
     try {
       supported = GoogleAdMob.loadAppsInTossAdMob.isSupported()
-    } catch (e) {
-      setDebugMsg(`isSupported threw: ${e}`)
+    } catch {
       timerRef.current = setTimeout(navigate, 3000)
       return
     }
-    setDebugMsg(`isSupported: ${supported}`)
 
     if (supported !== true) {
       timerRef.current = setTimeout(navigate, 3000)
@@ -67,26 +66,24 @@ export default function PetForm() {
     const cleanup = GoogleAdMob.loadAppsInTossAdMob({
       options: { adGroupId: AD_GROUP_ID },
       onEvent: (event) => {
-        setDebugMsg(`load: ${event.type}`)
         if (event.type === 'loaded') {
           cleanup()
           GoogleAdMob.showAppsInTossAdMob({
             options: { adGroupId: AD_GROUP_ID },
             onEvent: (showEvent) => {
-              setDebugMsg(`show: ${showEvent.type}`)
               if (showEvent.type === 'dismissed' || showEvent.type === 'failedToShow') {
                 navigate()
               }
             },
-            onError: (e) => { setDebugMsg(`show error: ${e}`); navigate() },
+            onError: navigate,
           })
         }
       },
-      onError: (e) => { setDebugMsg(`load error: ${e}`); navigate() },
+      onError: navigate,
     })
   }
 
-  if (isLoading) return <LoadingScreen petType={petType} debugMsg={debugMsg} />
+  if (isLoading) return <LoadingScreen petType={petType} />
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
