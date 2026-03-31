@@ -49,7 +49,10 @@ export default function PetForm() {
     let adSupported = false
     try {
       adSupported = loadFullScreenAd.isSupported()
-    } catch {}
+      console.log('[AD] isSupported:', adSupported)
+    } catch (e) {
+      console.log('[AD] isSupported threw:', e)
+    }
 
     if (!adSupported) {
       timerRef.current = setTimeout(navigate, 3000)
@@ -62,6 +65,7 @@ export default function PetForm() {
     loadFullScreenAd({
       options: { adGroupId: AD_GROUP_ID },
       onEvent: (event) => {
+        console.log('[AD] loadFullScreenAd event:', event.type)
         if (event.type === 'loaded') {
           showFullScreenAd({
             options: { adGroupId: AD_GROUP_ID },
@@ -74,7 +78,7 @@ export default function PetForm() {
           })
         }
       },
-      onError: navigate,
+      onError: (e) => { console.log('[AD] loadFullScreenAd error:', e); navigate() },
     })
   }
 
