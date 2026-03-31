@@ -7,7 +7,9 @@ import { Input } from '@/components/ui/input'
 import DatePicker from './DatePicker'
 import LoadingScreen from './LoadingScreen'
 
-const AD_GROUP_ID = 'ait.v2.live.b0c2a9d520164320'
+const AD_GROUP_ID = process.env.NODE_ENV === 'production'
+  ? 'ait.v2.live.b0c2a9d520164320'
+  : 'ait-ad-test-interstitial-id'
 const AD_WAIT_TIMEOUT_MS = 10000
 
 type PetType = 'dog' | 'cat'
