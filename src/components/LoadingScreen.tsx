@@ -1,8 +1,9 @@
 interface LoadingScreenProps {
   petType?: 'dog' | 'cat'
+  debugMsg?: string
 }
 
-export default function LoadingScreen({ petType = 'dog' }: LoadingScreenProps) {
+export default function LoadingScreen({ petType = 'dog', debugMsg }: LoadingScreenProps) {
   const petEmoji = petType === 'cat' ? '🐱' : '🐶'
 
   return (
@@ -50,6 +51,9 @@ export default function LoadingScreen({ petType = 'dog' }: LoadingScreenProps) {
       <p className="mt-8 text-white text-lg font-bold animate-pulse">
         🔮 운명을 읽는 중...
       </p>
+      {debugMsg && (
+        <p className="mt-4 text-yellow-300 text-xs px-4 text-center">[AD] {debugMsg}</p>
+      )}
     </div>
   )
 }

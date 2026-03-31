@@ -18,6 +18,7 @@ export default function PetForm() {
   const [name, setName] = useState('')
   const [birthday, setBirthday] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [debugMsg, setDebugMsg] = useState('')
   const navigatedRef = useRef(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -47,39 +48,38 @@ export default function PetForm() {
     }
 
     const supported = GoogleAdMob.loadAppsInTossAdMob.isSupported()
-    console.log('[AD] isSupported:', supported)
+    setDebugMsg(`isSupported: ${supported}`)
 
     if (supported !== true) {
       timerRef.current = setTimeout(navigate, 3000)
       return
     }
 
-    // 광고 로드 실패/타임아웃 시 안전 이동
     timerRef.current = setTimeout(navigate, AD_WAIT_TIMEOUT_MS)
 
     const cleanup = GoogleAdMob.loadAppsInTossAdMob({
       options: { adGroupId: AD_GROUP_ID },
       onEvent: (event) => {
-        console.log('[AD] load event:', event.type)
+        setDebugMsg(`load: ${event.type}`)
         if (event.type === 'loaded') {
           cleanup()
           GoogleAdMob.showAppsInTossAdMob({
             options: { adGroupId: AD_GROUP_ID },
             onEvent: (showEvent) => {
-              console.log('[AD] show event:', showEvent.type)
+              setDebugMsg(`show: ${showEvent.type}`)
               if (showEvent.type === 'dismissed' || showEvent.type === 'failedToShow') {
                 navigate()
               }
             },
-            onError: (e) => { console.log('[AD] show error:', e); navigate() },
+            onError: (e) => { setDebugMsg(`show error: ${e}`); navigate() },
           })
         }
       },
-      onError: (e) => { console.log('[AD] load error:', e); navigate() },
+      onError: (e) => { setDebugMsg(`load error: ${e}`); navigate() },
     })
   }
 
-  if (isLoading) return <LoadingScreen petType={petType} />
+  if (isLoading) return <LoadingScreen petType={petType} debugMsg={debugMsg} />
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
