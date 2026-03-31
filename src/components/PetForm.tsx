@@ -48,40 +48,30 @@ export default function PetForm() {
       router.push(`/result?${paramsStr}`)
     }
 
-    let adSupported = false
-    try {
-      adSupported = loadFullScreenAd.isSupported()
-      console.log('[AD] isSupported:', adSupported)
-    } catch (e) {
-      console.log('[AD] isSupported threw:', e)
-    }
-
-    if (!adSupported) {
-      timerRef.current = setTimeout(navigate, 3000)
-      return
-    }
-
     // 광고 로드 실패/타임아웃 시 안전 이동
     timerRef.current = setTimeout(navigate, AD_WAIT_TIMEOUT_MS)
 
-    loadFullScreenAd({
-      options: { adGroupId: AD_GROUP_ID },
-      onEvent: (event) => {
-        console.log('[AD] loadFullScreenAd event:', event.type)
-        if (event.type === 'loaded') {
-          showFullScreenAd({
-            options: { adGroupId: AD_GROUP_ID },
-            onEvent: (showEvent) => {
-              if (showEvent.type === 'dismissed' || showEvent.type === 'failedToShow') {
-                navigate()
-              }
-            },
-            onError: navigate,
-          })
-        }
-      },
-      onError: (e) => { console.log('[AD] loadFullScreenAd error:', e); navigate() },
-    })
+    try {
+      loadFullScreenAd({
+        options: { adGroupId: AD_GROUP_ID },
+        onEvent: (event) => {
+          if (event.type === 'loaded') {
+            showFullScreenAd({
+              options: { adGroupId: AD_GROUP_ID },
+              onEvent: (showEvent) => {
+                if (showEvent.type === 'dismissed' || showEvent.type === 'failedToShow') {
+                  navigate()
+                }
+              },
+              onError: navigate,
+            })
+          }
+        },
+        onError: navigate,
+      })
+    } catch {
+      navigate()
+    }
   }
 
   if (isLoading) return <LoadingScreen petType={petType} />
