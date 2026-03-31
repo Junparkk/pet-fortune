@@ -46,7 +46,12 @@ export default function PetForm() {
       router.push(`/result?${paramsStr}`)
     }
 
-    if (!loadFullScreenAd.isSupported()) {
+    let adSupported = false
+    try {
+      adSupported = loadFullScreenAd.isSupported()
+    } catch {}
+
+    if (!adSupported) {
       timerRef.current = setTimeout(navigate, 3000)
       return
     }
